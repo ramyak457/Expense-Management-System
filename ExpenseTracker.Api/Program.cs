@@ -1,4 +1,5 @@
 using ExpenseTracker.Application.Auth;
+using ExpenseTracker.Application.Common.Interfaces;
 using ExpenseTracker.Infrastructure;
 using ExpenseTracker.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -18,6 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     )
 );
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -36,6 +38,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             )
         };
     });
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -55,6 +58,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

@@ -1,7 +1,9 @@
-﻿using ExpenseTracker.Application.Auth;
+﻿using ExpenseTracker.Application.Auth.DTO;
 using ExpenseTracker.Application.Auth.Models;
+using ExpenseTracker.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace ExpenseTracker.Api.Controllers
@@ -33,6 +35,14 @@ namespace ExpenseTracker.Api.Controllers
                 Email = User.FindFirstValue(ClaimTypes.Email),
                 Roles = User.FindAll(ClaimTypes.Role).Select(r => r.Value)
             });
+        }
+
+        [HttpPost("register")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> Register(RegisterRequest request)
+        {
+            var result = await _authService.RegisterAsync(request);
+            return Ok(result);
         }
     }
 }

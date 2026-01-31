@@ -1,4 +1,6 @@
-﻿using ExpenseTracker.Application.Auth.Models;
+﻿using ExpenseTracker.Application.Auth.DTO;
+using ExpenseTracker.Application.Auth.Models;
+using ExpenseTracker.Application.Common.Interfaces;
 using ExpenseTracker.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -12,11 +14,13 @@ namespace ExpenseTracker.Application.Auth
     {
         // Implementation goes here
         private readonly IUserRepository _userRepository;
+        private readonly IRoleRepository _roleRepository;
         private readonly IConfiguration _config;
 
-        public AuthService(IUserRepository userRepository, IConfiguration config)
+        public AuthService(IUserRepository userRepository, IRoleRepository roleRepository, IConfiguration config)
         {
             _userRepository = userRepository;
+            _roleRepository = roleRepository;
             _config = config;
         }
         public async Task<AuthResponse> LoginAsync(LoginRequest request)
@@ -37,6 +41,40 @@ namespace ExpenseTracker.Application.Auth
                 Email = user.Email,
                 Token = token,
                 Roles = roles
+            };
+        }
+
+        public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
+        {
+            if (await _userRepository.ExistsAsync(request.Email))
+                throw new Exception("User already exists");
+            var role = await _roleRepository.GetByNameAsync(request.Role);
+            if (role == null)
+            {
+                throw new Exception ("Role does not exist");
+            }
+
+            var user = new User
+            {
+                Email = request.Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true
+            };
+            user.UserRoles.Add(new UserRole
+            {
+                RoleId = role.Id
+            });
+
+            await _userRepository.AddUserAsync(user);
+
+            return new AuthResponse
+            {
+                UserId = user.Id,
+                Email = user.Email,
+                Roles = new List<string> { (role.Name) }
             };
         }
 

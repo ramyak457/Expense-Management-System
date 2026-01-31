@@ -10,7 +10,7 @@ Organizations need a secure and auditable way to manage employee expenses. Manua
 This project is a **production-style backend system** that enables employees to submit expenses, managers to approve or reject them, and finance teams to track and report expenses efficiently.
 
 ## High-Level Architecture
-![Architecture Diagram](docs/architecture.jpg)
+![Architecture Diagram](docs/Architecture.jpg)
 
 ## Architecture Overview
 ### Client Layer
