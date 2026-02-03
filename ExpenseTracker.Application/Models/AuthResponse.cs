@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ExpenseTracker.Application.Auth.Models
+namespace ExpenseTracker.Application.Models
 {
     public class AuthResponse
     {

@@ -1,4 +1,4 @@
-using ExpenseTracker.Application.Auth;
+using ExpenseTracker.Application.Services;
 using ExpenseTracker.Application.Common.Interfaces;
 using ExpenseTracker.Infrastructure;
 using ExpenseTracker.Infrastructure.Repositories;
@@ -21,6 +21,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

@@ -1,5 +1,5 @@
-﻿using ExpenseTracker.Application.Auth.DTO;
-using ExpenseTracker.Application.Auth.Models;
+﻿using ExpenseTracker.Application.DTO;
+using ExpenseTracker.Application.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;

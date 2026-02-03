@@ -1,6 +1,6 @@
-﻿using ExpenseTracker.Application.Auth.DTO;
-using ExpenseTracker.Application.Auth.Models;
-using ExpenseTracker.Application.Common.Interfaces;
+﻿using ExpenseTracker.Application.Common.Interfaces;
+using ExpenseTracker.Application.DTO;
+using ExpenseTracker.Application.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;

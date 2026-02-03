@@ -1,6 +1,6 @@
-﻿using ExpenseTracker.Application.Auth.DTO;
-using ExpenseTracker.Application.Auth.Models;
-using ExpenseTracker.Application.Common.Interfaces;
+﻿using ExpenseTracker.Application.Common.Interfaces;
+using ExpenseTracker.Application.DTO;
+using ExpenseTracker.Application.Models;
 using ExpenseTracker.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -8,7 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace ExpenseTracker.Application.Auth
+namespace ExpenseTracker.Application.Services
 {
     public class AuthService : IAuthService
     {
