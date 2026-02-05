@@ -7,7 +7,7 @@ namespace ExpenseTracker.Application.DTO
     public class ApprovalDto
     {
         public Guid ExpenseId { get; set; }
-        public bool Approve { get; set; }
+        public bool IsApproved { get; set; }
         public string? Comments { get; set; }
     }
 }

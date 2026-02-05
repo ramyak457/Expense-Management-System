@@ -2,6 +2,7 @@
 using ExpenseTracker.Application.DTO;
 using ExpenseTracker.Domain.Entities;
 using ExpenseTracker.Domain.Enums;
+using ExpenseTracker.Application.Mappers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -29,38 +30,20 @@ namespace ExpenseTracker.Application.Services
             };
 
             await _expenseRepository.AddAsync(expense);
-            return MapToDto(expense);
-        }
-
-        private static ExpenseDTO MapToDto(Expense e)
-        {
-            return new ExpenseDTO
-            {
-                Id = e.Id,
-                Amount = e.Amount,
-                ExpenseDate = e.ExpenseDate,
-                Status = e.Status.ToString(),
-                CategoryName = e.Category?.Name ?? "",
-                Approvals = e.Approvals
-                .Select(a => new ApprovalHistoryDto
-                {
-                    ApproverId = a.ApproverId,
-                    Decision = a.Decision.ToString(),
-                    Comments = a.Comments,
-                    ActionDate = a.ActionDate
-                })
-                .ToList()
-            };
+            return ExpenseMapper.ToDto(expense);
         }
 
         public async Task SubmitAsync(Guid employeeId, Guid expenseId)
         {
             var expense = await _expenseRepository.GetByIdAsync(expenseId);
             if (expense == null)
-                throw new Exception("No Expense found");
+                throw new Exception("Expense not found");
 
             if (expense.EmployeeId != employeeId)
                 throw new Exception("Not your expense");
+
+            if (!expense.Receipts.Any())
+                throw new Exception("At least one receipt must be attached before submission");
 
             if (expense.Status != ExpenseStatus.Draft)
                 throw new Exception("Only draft can be submitted");
@@ -83,28 +66,28 @@ namespace ExpenseTracker.Application.Services
             {
                 ExpenseId = expense.Id,
                 ApproverId = managerId,
-                Decision = request.Approve ? ManagerApprovalStatus.Approved : ManagerApprovalStatus.Rejected,
+                Decision = request.IsApproved ? ManagerApprovalStatus.Approved : ManagerApprovalStatus.Rejected,
                 Comments = request.Comments,
                 ActionDate = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow
             };
 
             expense.Approvals.Add(approval);
-            expense.Status = request.Approve ? ExpenseStatus.Approved : ExpenseStatus.Rejected;
+            expense.Status = request.IsApproved ? ExpenseStatus.Approved : ExpenseStatus.Rejected;
             await _expenseRepository.UpdateAsync(expense);
         }
 
         public async Task<List<ExpenseDTO>> MyExpenses(Guid employeeId)
         {
             var expenses = await _expenseRepository.GetByEmployeeAsync(employeeId);
-            return expenses.Select(MapToDto).ToList();
+            return expenses.Select(ExpenseMapper.ToDto).ToList();
         }
 
         public async Task<List<ExpenseDTO>> PendingForManager()
         {
             var expenses = await _expenseRepository.GetByStatusAsync(ExpenseStatus.Submitted);
 
-            return expenses.Select(MapToDto).ToList();
+            return expenses.Select(ExpenseMapper.ToDto).ToList();
         }
     }
 }

@@ -27,22 +27,36 @@ namespace ExpenseTracker.Infrastructure.Repositories
             return await _context.Expenses
                 .Include(e => e.Category)
                 .Include(e => e.Approvals)
+                .Include(e => e.Receipts)
                 .FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        public Task<List<Expense>> GetByEmployeeAsync(Guid employeeId)
+        public async Task<List<Expense>> GetByEmployeeAsync(Guid employeeId)
         {
-            throw new NotImplementedException();
+            return await _context.Expenses
+                .Include(e => e.Category)
+                .Include(e => e.Approvals)
+                .Where(e => e.EmployeeId == employeeId)
+                .OrderByDescending(e => e.CreatedAt)
+                .ToListAsync();
         }
 
-        public Task<List<Expense>> GetByStatusAsync(ExpenseStatus expenseStatus)
+        public async Task<List<Expense>> GetByStatusAsync(ExpenseStatus expenseStatus)
         {
-            throw new NotImplementedException();
+            return await _context.Expenses
+                .Include(e => e.Category)
+                .Include(e => e.Approvals)
+                .Include(e => e.Employee)
+                .Where (e=> e.Status == expenseStatus)
+                .OrderBy(e => e.CreatedAt)
+                .ToListAsync();
         }
 
-        public Task UpdateAsync(Expense expense)
+        public async Task UpdateAsync(Expense expense)
         {
-            throw new NotImplementedException();
+            _context.Expenses.Update(expense);
+
+            await _context.SaveChangesAsync();
         }
     }
 }
