@@ -21,6 +21,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("ExpenseTrackerDbConnection")
     )
 );
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -49,6 +50,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateExpenseValidator>();
+builder.Services.AddCors(options=>
+{
+    options.AddPolicy("AllowUI", policy=>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -71,6 +81,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseStaticFiles();
+app.UseCors("AllowUI");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Login}/{id?}");

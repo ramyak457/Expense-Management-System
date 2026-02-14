@@ -26,7 +26,7 @@ namespace ExpenseTracker.Application.Services
             }).ToList();
         }
 
-        public async Task CreateAsync(CreateCategoryDto dto)
+        public async Task<ExpenseCategory> CreateAsync(CreateCategoryDto dto)
         {
             var category = new ExpenseCategory
             {
@@ -36,6 +36,7 @@ namespace ExpenseTracker.Application.Services
             };
 
             await _repo.AddAsync(category);
+            return category;
         }
     }
 }

@@ -23,8 +23,8 @@ namespace ExpenseTracker.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateCategoryDto dto)
         {
-            await _service.CreateAsync(dto);
-            return Ok();
+            var category = await _service.CreateAsync(dto);
+            return Ok(category);
         }
 
     }

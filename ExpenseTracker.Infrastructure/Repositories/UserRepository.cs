@@ -1,9 +1,7 @@
 ﻿using ExpenseTracker.Application.Common.Interfaces;
+using ExpenseTracker.Application.DTO;
 using ExpenseTracker.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ExpenseTracker.Infrastructure.Repositories
 {
@@ -33,6 +31,31 @@ namespace ExpenseTracker.Infrastructure.Repositories
                 .Include(u => u.UserRoles)
                     .ThenInclude(ur => ur.Role)
                 .FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<(List<UserDto> Users, int TotalCount)> GetUsersAsync(int page, int pageSize)
+        {
+            var query = _context.Users
+                .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                .AsQueryable();
+
+            var total = await query.CountAsync();
+
+            var users = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(u => new UserDto
+                {
+                    Id = u.Id,
+                    Name = u.FirstName + " " + u.LastName,
+                    Email = u.Email,
+                    Role = u.UserRoles
+                        .Select(ur => ur.Role.Name).FirstOrDefault()
+                })
+                .ToListAsync();
+
+            return (users, total);
         }
     }
 }
